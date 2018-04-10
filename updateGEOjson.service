@@ -1,0 +1,12 @@
+[Unit]
+Description=Converts the data.csv to data.js in /var/www/html/
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/var/www/html/
+ExecStart=/usr/bin/convertScript.sh
+
+[Install]
+WantedBy=multi-user.target
