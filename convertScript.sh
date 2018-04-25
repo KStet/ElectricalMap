@@ -7,12 +7,11 @@ out=data.js
 while :
 do
 	inotifywait -e close_write data.csv -q
-	echo 'eqfeed_callback(
-	
-	{
-	        "type": "FeatureCollection",
-	        "features": [' > $out
-	
+	data='eqfeed_callback(\n
+	\n
+	{\n
+	\t        "type": "FeatureCollection",\n
+	\t        "features": ['
 	
 	for i in `cat $in | tail -n +2 | tr -s ' ' | tr ' ' '%'`
 	do
@@ -23,23 +22,23 @@ do
 		lng=`echo $i | cut -d ',' -f4 | awk '{$1=$1};1'`
 		voltage=`echo $i | cut -d ',' -f5 | awk '{$1=$1};1'`
 	
-		echo -ne "\n                        {
-	                        \"type\": \"Feature\",
-	                        \"properties\": {
-	                                ID: \"$ID\",
-	                                Address: \"$address\",
-	                                Voltage: \"$voltage\"
-	                        },
-	                        \"geometry\": {
-	                                \"type\": \"Point\",
-	                                \"LatLng\": [
-	                                        $lat,
-	                                        $lng
-	                                ]
-	                        }
-	                }," >> $out 
+		data="$data\n\t\t                        {\n
+	                       \t\t\t\"type\": \"Feature\",\n
+	                        \t\t\t\"properties\": {\n
+	                        \t\t\t\t        ID: \"$ID\",\n
+	                        \t\t\t\t        Address: \"$address\",\n
+	                        \t\t\t\t        Voltage: \"$voltage\"\n
+	                        \t\t\t},\n
+	                        \t\t\t\"geometry\": {\n
+	                               \t\t\t\t \"type\": \"Point\",\n
+	                               \t\t\t\t \"LatLng\": [\n
+	                               \t\t\t\t\t         $lat,\n
+	                               \t\t\t\t\t         $lng\n
+	                               \t\t\t\t ]\n
+	                        \t\t\t}\n
+	                \t\t}," 
 	done
-	
+	echo -ne $data > $out
 	truncate -s-1 $out
 	echo -e "\n        ]
 	});" >> $out
